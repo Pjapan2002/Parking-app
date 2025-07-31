@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+
+  <!-- Welcome Message with Modal Trigger -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      Welcome, 
+      <a href="#" data-bs-toggle="modal" data-bs-target="#editUserModal" class="text-decoration-none">
+        {{ current_user.username }}
+      </a>!
+    </h2>
+  </div>
+
+  {% if active %}
+    <div class="alert alert-success shadow-sm">
+      <h5 class="mb-2"><i class="fas fa-circle text-success"></i> Active Reservation</h5>
+      <p><strong>Spot ID:</strong> {{ active.spot_id }}</p>
+      <p><strong>Parked At:</strong> {{ active.parking_time.strftime('%Y-%m-%d %H:%M') }}</p>
+      <a href="{{ url_for('user.release_spot') }}" class="btn btn-warning mt-2">Release Spot</a>
+    </div>
+  {% else %}
+    <!-- Search and Filter Form -->
+    <form method="GET" class="card card-body mb-4 shadow-sm">
+      <div class="row align-items-end">
+        <div class="col-md-5">
+          <label for="search" class="form-label">Search by name or pin</label>
+          <input type="text" name="search" id="search" class="form-control" placeholder="Ex: Surat or 3910005" value="{{ search or '' }}">
+        </div>
+        <div class="col-md-3">
+          <div class="form-check mt-4">
+            <input type="checkbox" class="form-check-input" name="available" id="available" {% if available_only %}checked{% endif %}>
+            <label class="form-check-label" for="available">Only Available</label>
+          </div>
+        </div>
+        <div class="col-md-2 mt-4">
+          <button class="btn btn-primary w-100">Search</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Parking Lot Listing -->
+    <h4 class="mb-3"><i class="fas fa-parking"></i> Parking Lots</h4>
+    {% if lots %}
+      <div class="list-group shadow-sm">
+        {% for lot in lots %}
+        <div class="list-group-item d-flex justify-content-between align-items-start">
+          <div class="me-3">
+            <h6 class="mb-1">{{ lot.prime_location_name }} <span class="text-muted">(${{ lot.price_per_hour }}/hr)</span></h6>
+            <div class="text-muted small">{{ lot.address }}, Pin: {{ lot.pin_code }}</div>
+          </div>
+          <div class="text-end">
+            <span class="badge bg-success mb-2">
+              {{ lot.spots | selectattr("status", "equalto", "A") | list | length }} Available
+            </span><br>
+            <a href="{{ url_for('user.book_spot', lot_id=lot.id) }}" class="btn btn-sm btn-outline-primary">Book Spot</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">No matching parking lots found.</div>
+    {% endif %}
+  {% endif %}
+
+  <div class="text-center mt-4">
+    <a href="{{ url_for('user.history') }}" class="btn btn-secondary"><i class="fas fa-history"></i> View Parking History</a>
+  </div>
+
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="{{ url_for('user.edit_profile') }}" class="modal-content">
+      {{ edit_form.hidden_tag() }}
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserModalLabel">Edit Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          {{ edit_form.username.label }} {{ edit_form.username(class="form-control") }}
+        </div>
+        <div class="mb-3">
+          {{ edit_form.password.label }} {{ edit_form.password(class="form-control") }}
+        </div>
+        <div class="mb-3">
+          {{ edit_form.confirm_password.label }} {{ edit_form.confirm_password(class="form-control") }}
+        </div>
+      </div>
+      <div class="modal-footer">
+        {{ edit_form.submit(class="btn btn-primary") }}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

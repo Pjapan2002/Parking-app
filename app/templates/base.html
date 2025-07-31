@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Parking App{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    {% block header %}
+    {% endblock %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+        <div class="container-fluid">
+          <a class="navbar-brand fw-bold text-primary" href="#">Parking App</a>
+          <div class="collapse navbar-collapse justify-content-end">
+            {% if current_user.is_authenticated %}
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-primary btn-sm">Logout</a>
+                </li>
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+    </nav>
+    
+    <!-- flask message block -->
+    <div id="flash-container" style="position: relative; z-index: 1000;">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show flash-msg" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+    </div>
+          
+    <!-- main block -->
+    {% block content %}
+    {% endblock %}
+
+    <footer class="bg-light text-dark text-center py-3 mt-auto">
+      <small>© 2025 Rights Reserved by <strong>Japan Patel</strong></small>
+    </footer>
+
+    <!-- <script>
+      // Auto-hide flash messages after 3 seconds
+      setTimeout(function () {
+        const alerts = document.querySelectorAll('.flash-msg');
+        alerts.forEach(function(alert) {
+          // Use Bootstrap's fade out class or remove it manually
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+        });
+      }, 3000);
+    </script> -->
+
+    <script>
+      setTimeout(function () {
+        document.querySelectorAll('.flash-msg').forEach(function(alert) {
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+          setTimeout(function () {
+            alert.remove();
+          }, 500);
+        });
+      }, 3000); // Auto-dismiss after 3s
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block header %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home_page.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-box text-center">
+        <h1><i class="fas fa-car"></i> Welcome to Vehicle Parking App</h1>
+        <p class="lead mb-4">Easily book, manage, and monitor your 4-wheeler parking spots.</p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg">Sign Up</a>
+            <a href="{{ url_for('auth.admin_login') }}" class="btn btn-dark btn-lg">Admin Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
